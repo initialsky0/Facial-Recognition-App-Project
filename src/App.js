@@ -7,12 +7,7 @@ import Logo from './Components/Logo/Logo';
 import Rank from './Components/Rank/Rank';
 import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
-import Clarifai from 'clarifai';
 import './App.css';
-
-const app = new Clarifai.App({
-  apiKey: 'hidden.'
- });
 
 const particleParems = {
   particles: {
@@ -26,23 +21,25 @@ const particleParems = {
   }
 }
 
+const initialState = {
+  input: '',
+  imgUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  } 
+} 
+
 class App extends React.Component {
   constructor() {
     super();
-    this.state={
-      input: '',
-      imgUrl: '',
-      box: {},
-      route: 'signin',
-      isSignedIn: false,
-      user: {
-        id: '',
-        name: '',
-        email: '',
-        entries: 0,
-        joined: ''
-      }
-    }
+    this.state = initialState;
   }
 
   // componentDidMount() {
@@ -84,7 +81,13 @@ class App extends React.Component {
 
   onButtonSubmit = () => {
     this.setState({imgUrl: this.state.input});
-    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    fetch('http://localhost:3000/imgURL', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        input: this.state.input
+      })
+    }).then(response => response.json())
     .then(response => {
       if(response) {
         fetch('http://localhost:3000/img', {
@@ -96,7 +99,8 @@ class App extends React.Component {
         }).then(response => response.json())
           .then(newEntries => {
             this.setState(Object.assign(this.state.user, {entries: newEntries}))
-            }); 
+            })
+            .catch(console.log); 
             // Second method
             // {
             // this.setState( prevUser => {
@@ -114,8 +118,9 @@ class App extends React.Component {
   onRouteChange = (route2) => {
     if(route2 === 'home') {
       this.setState({isSignedIn: true});
-    } else if(route2 === 'signin' || route2 === 'register'){
+    } else if(route2 === 'signin'){
       this.setState({isSignedIn: false});
+      this.setState(initialState);
     }
     this.setState({route: route2});
   }
