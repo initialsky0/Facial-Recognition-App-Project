@@ -43,7 +43,7 @@ class App extends React.Component {
   }
 
   // componentDidMount() {
-  //   fetch('http://localhost:3000/')
+  //   fetch('https://i0-face-recognition.herokuapp.com/')
   //   .then(response => response.json())
   //   .then(console.log);
   // }
@@ -81,7 +81,7 @@ class App extends React.Component {
 
   onButtonSubmit = () => {
     this.setState({imgUrl: this.state.input});
-    fetch('http://localhost:3000/imgURL', {
+    fetch('https://i0-face-recognition.herokuapp.com/imgURL', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -90,7 +90,7 @@ class App extends React.Component {
     }).then(response => response.json())
     .then(response => {
       if(response) {
-        fetch('http://localhost:3000/img', {
+        fetch('https://i0-face-recognition.herokuapp.com/img', {
           method: 'put',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
